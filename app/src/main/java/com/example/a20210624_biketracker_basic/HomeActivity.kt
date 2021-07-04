@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,12 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.tabs
 import kotlinx.android.synthetic.main.activity_tours.*
+
+
+/*
+    TODO: - add transition
+          - create new small icon fro notification
+ */
 
 val CHANNEL_ID = "channel_id_01"
 
@@ -36,10 +43,12 @@ class HomeActivity : AppCompatActivity() {
                 chronometer2.base = SystemClock.elapsedRealtime()
                 chronometer2.start()
                 sendNotification()
+                TabLayoutUtils.enableTabs(tabs, false)
                 button.text = "stop"
             } else {
                 chronometer2.stop()
                 deleteNotification()
+                TabLayoutUtils.enableTabs(tabs, true)
                 button.text = "restart"
             }
 
@@ -75,7 +84,15 @@ class HomeActivity : AppCompatActivity() {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     sendNotification()
                 }
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
                 override fun afterTextChanged(s: Editable) {}
             }
         )
