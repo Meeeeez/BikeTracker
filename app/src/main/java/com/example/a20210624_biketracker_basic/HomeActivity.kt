@@ -8,27 +8,30 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MotionEvent
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.isVisible
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.tabs
 import kotlinx.android.synthetic.main.activity_tours.*
 
-
 /*
-    TODO: - add transition
-          - create new small icon fro notification
+    TODO: - create new small icon fro notification
+          - safe tour
  */
 
 val CHANNEL_ID = "channel_id_01"
 
 class HomeActivity : AppCompatActivity() {
+
+    private var originButton = IntArray(2)
+    private var originChronometer = IntArray(2)
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,27 +40,48 @@ class HomeActivity : AppCompatActivity() {
         val selectedTab: Int = intent.getIntExtra("tab", 0)
         tabs.getTabAt(selectedTab)?.select()
 
-        var clickCounter: Int = 0
         button.setOnClickListener {
-            if (clickCounter % 2 == 0) {
-                chronometer2.base = SystemClock.elapsedRealtime()
+
+            showInputsFields()
+
+            if (!button.text.equals("stop")) {
                 chronometer2.start()
                 sendNotification()
                 TabLayoutUtils.enableTabs(tabs, false)
                 button.text = "stop"
-            } else {
+                inputStart.text.clear()
+                inputDestination.text.clear()
+            } else if (button.text.equals("stop") && inputStart.text.isNotBlank() && inputDestination.text.isNotBlank()) {
                 chronometer2.stop()
                 deleteNotification()
                 TabLayoutUtils.enableTabs(tabs, true)
-                button.text = "restart"
-            }
 
-            clickCounter++
+                hideInputFields()
+
+                button.text = "start"
+
+                // safe tour here
+
+                Toast.makeText(
+                    this@HomeActivity,
+                    "Saved Tour",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+
+                chronometer2.base = SystemClock.elapsedRealtime()
+            } else {
+                Toast.makeText(
+                    this@HomeActivity,
+                    "Enter Start and Destination",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                if (clickCounter % 2 == 0) {
+                if (!button.text.equals("stop")) {
                     when (tab) {
                         tabs.getTabAt(0) -> switchToTab(0)
                         tabs.getTabAt(1) -> switchToTab(1)
@@ -91,6 +115,7 @@ class HomeActivity : AppCompatActivity() {
                     count: Int,
                     after: Int
                 ) {
+
                 }
 
                 override fun afterTextChanged(s: Editable) {}
@@ -118,13 +143,14 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun deleteNotification(){
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private fun deleteNotification() {
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(0)
     }
 
     fun switchToTab(index: Int) {
-        if (button.text.equals("stop")){
+        if (button.text.equals("stop")) {
 
             val tabStrip = tabs.getChildAt(0) as LinearLayout
             tabStrip.isEnabled = false
@@ -146,5 +172,26 @@ class HomeActivity : AppCompatActivity() {
             intent.putExtra("tab", 2)
             startActivity(intent)
         }
+    }
+
+    private fun showInputsFields() {
+        button.getLocationOnScreen(originButton)
+        chronometer2.getLocationOnScreen(originChronometer)
+
+        chronometer2.animate()
+            .y(900f)
+        inputDestination.isVisible = true
+        inputStart.isVisible = true
+        button.animate()
+            .y(1600f)
+    }
+
+    private fun hideInputFields() {
+        chronometer2.animate()
+            .y(980f)
+        inputDestination.isVisible = false
+        inputStart.isVisible = false
+        button.animate()
+            .y(1380f)
     }
 }
