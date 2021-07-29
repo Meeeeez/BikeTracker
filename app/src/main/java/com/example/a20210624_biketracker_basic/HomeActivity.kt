@@ -22,7 +22,8 @@ import kotlinx.android.synthetic.main.activity_tours.*
 
 /*
     TODO: - create new small icon fro notification
-          - safe tour
+          - save tour
+          - fix bug when starting timer (system.elapsedTime)
  */
 
 val CHANNEL_ID = "channel_id_01"
@@ -51,7 +52,7 @@ class HomeActivity : AppCompatActivity() {
                 button.text = "stop"
                 inputStart.text.clear()
                 inputDestination.text.clear()
-            } else if (button.text.equals("stop") && inputStart.text.isNotBlank() && inputDestination.text.isNotBlank()) {
+            } else if (button.text == "stop" && inputStart.text.isNotBlank() && inputDestination.text.isNotBlank()) {
                 chronometer2.stop()
                 deleteNotification()
                 TabLayoutUtils.enableTabs(tabs, true)
@@ -60,14 +61,13 @@ class HomeActivity : AppCompatActivity() {
 
                 button.text = "start"
 
-                // safe tour here
+                // save tour here
 
                 Toast.makeText(
                     this@HomeActivity,
                     "Saved Tour",
                     Toast.LENGTH_SHORT
                 ).show()
-
 
                 chronometer2.base = SystemClock.elapsedRealtime()
             } else {
@@ -179,19 +179,26 @@ class HomeActivity : AppCompatActivity() {
         chronometer2.getLocationOnScreen(originChronometer)
 
         chronometer2.animate()
-            .y(900f)
+            .y(1500f)
         inputDestination.isVisible = true
         inputStart.isVisible = true
         button.animate()
-            .y(1600f)
+            .y(2150f)
+            .scaleXBy(0.03f)
+            .scaleYBy(0.03f)
+            .withEndAction {
+                button.animate()
+                    .scaleXBy(-0.03f)
+                    .scaleYBy(-0.03f)
+            }
     }
 
     private fun hideInputFields() {
         chronometer2.animate()
-            .y(980f)
+            .y(1580f)
         inputDestination.isVisible = false
         inputStart.isVisible = false
         button.animate()
-            .y(1380f)
+            .y(2015f)
     }
 }
