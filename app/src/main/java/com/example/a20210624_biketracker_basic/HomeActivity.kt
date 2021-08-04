@@ -17,8 +17,6 @@ import androidx.core.view.isVisible
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.tabs
-import kotlinx.android.synthetic.main.activity_tours.*
 
 /*
     TODO: - create new small icon fro notification
@@ -26,10 +24,9 @@ import kotlinx.android.synthetic.main.activity_tours.*
           - fix bug when starting timer (system.elapsedTime)
  */
 
-val CHANNEL_ID = "channel_id_01"
+const val CHANNEL_ID = "channel_id_01"
 
 class HomeActivity : AppCompatActivity() {
-
     private var originButton = IntArray(2)
     private var originChronometer = IntArray(2)
 
@@ -45,7 +42,7 @@ class HomeActivity : AppCompatActivity() {
 
             showInputsFields()
 
-            if (!button.text.equals("stop")) {
+            if (button.text != "stop") {
                 chronometer2.start()
                 sendNotification()
                 TabLayoutUtils.enableTabs(tabs, false)
@@ -61,13 +58,16 @@ class HomeActivity : AppCompatActivity() {
 
                 button.text = "start"
 
-                // save tour here
+                //save tour
+                val dbHelper = SQLiteDBHelper(this@HomeActivity)
+                val duration = dbHelper.formatTime(chronometer2.text.toString())
+                dbHelper.addTour(duration, inputStart.text.toString(), inputDestination.text.toString())
 
-                Toast.makeText(
-                    this@HomeActivity,
-                    "Saved Tour",
-                    Toast.LENGTH_SHORT
-                ).show()
+                if (dbHelper.result == -1L) {
+                    Toast.makeText(this@HomeActivity, "Failed to save Tour", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@HomeActivity, "Saved Tour!", Toast.LENGTH_SHORT).show()
+                }
 
                 chronometer2.base = SystemClock.elapsedRealtime()
             } else {
@@ -81,7 +81,7 @@ class HomeActivity : AppCompatActivity() {
 
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                if (!button.text.equals("stop")) {
+                if (button.text != "stop") {
                     when (tab) {
                         tabs.getTabAt(0) -> switchToTab(0)
                         tabs.getTabAt(1) -> switchToTab(1)
@@ -117,7 +117,6 @@ class HomeActivity : AppCompatActivity() {
                 ) {
 
                 }
-
                 override fun afterTextChanged(s: Editable) {}
             }
         )
@@ -150,7 +149,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     fun switchToTab(index: Int) {
-        if (button.text.equals("stop")) {
+        if (button.text == "stop") {
 
             val tabStrip = tabs.getChildAt(0) as LinearLayout
             tabStrip.isEnabled = false
@@ -175,9 +174,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showInputsFields() {
-        button.getLocationOnScreen(originButton)
-        chronometer2.getLocationOnScreen(originChronometer)
-
         chronometer2.animate()
             .y(1500f)
         inputDestination.isVisible = true

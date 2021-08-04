@@ -1,30 +1,29 @@
 package com.example.a20210624_biketracker_basic
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class SampleSQLiteDBHelper(context: Context?) : SQLiteOpenHelper(
-    context,
-    DATABASE_NAME,
-    null,
-    DATABASE_VERSION
-) {
+class SQLiteDBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+    var result = 0L
+
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
         //Tour
         sqLiteDatabase.execSQL(
             "CREATE TABLE " + TOUR_TABLE_NAME + " (" +
-                    TOUR_ID + " INT PRIMARY KEY AUTOINCREMENT, " +
+                    TOUR_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     TOUR_START + " VARCHAR(100), " +
                     TOUR_DESTINATION + " VARCHAR(100), " +
-                    TOUR_DURATION + " INT UNSIGNED" + ")"           //minutes
+                    TOUR_DURATION + " INTEGER UNSIGNED" + ")"           //seconds
         )
         //Maintenance
         sqLiteDatabase.execSQL(
             "CREATE TABLE " + MAINTENANCE_TABLE_NAME + " (" +
-                    MAINTENANCE_ID + " INT PRIMARY KEY AUTOINCREMENT, " +
+                    MAINTENANCE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     MAINTENANCE_NAME + " VARCHAR(50), " +
-                    MAINTENANCE_INTERVAL + " INT UNSIGNED" + ")"    //hours
+                    MAINTENANCE_INTERVAL + " INTEGER UNSIGNED" + ")"    //hours
         )
     }
 
@@ -32,6 +31,30 @@ class SampleSQLiteDBHelper(context: Context?) : SQLiteOpenHelper(
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TOUR_TABLE_NAME")
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $MAINTENANCE_TABLE_NAME")
         onCreate(sqLiteDatabase)
+    }
+
+    fun addTour(duration: String?, start: String?, destination: String?) { // string for now watch for datatype that allows adding times
+        val db = this.writableDatabase
+        val cv = ContentValues()
+        cv.put(TOUR_DURATION, duration)
+        cv.put(TOUR_START, start)
+        cv.put(TOUR_DESTINATION, destination)
+        result = db.insert(TOUR_TABLE_NAME, null, cv)
+
+        println(duration)
+        println(start)
+        println(destination)
+    }
+
+    fun formatTime(time: String): String {
+        val splittedTimeString: ArrayList<String> = time.split(":") as ArrayList<String>
+        val splittedTimeInt = splittedTimeString.map { it.toInt() } as ArrayList<Int>
+
+        if (splittedTimeInt.size < 3){     //check if format is 00:00:00 or 00:00
+            splittedTimeInt.add(0, 0)
+        }
+
+        return ((splittedTimeInt[0] * 60 + splittedTimeInt[1]) * 60 + splittedTimeInt[2]).toString()
     }
 
     companion object {
