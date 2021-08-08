@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.collections.ArrayList
@@ -31,12 +30,42 @@ class CustomAdapter internal constructor(
         holder: MyViewHolder,
         position: Int
     ) {
-        holder.tour_id_txt.text = tour_id[position].toString()
-        holder.tour_start_txt.text = tour_start[position].toString()
-        holder.tour_destination_txt.text = tour_destination[position].toString()
-        holder.tour_duration_txt.text = tour_duration[position].toString()
-        holder.tour_date_txt.text = tour_date[position].toString()
+        holder.tourIDTxt.text = tour_id[position].toString()
+        holder.tourStartTxt.text = tour_start[position].toString()
+        holder.tourDestinationTxt.text = tour_destination[position].toString()
+        holder.tourDateTxt.text = tour_date[position].toString()
+        holder.tourDurationTxt.text = secondsToTime(tour_duration[position].toString())
+    }
 
+    private fun secondsToTime(totalSeconds: String): String {
+        val hours = totalSeconds.toInt() / 3600
+        val minutes = ((totalSeconds.toInt()) / 60) % 60
+        val seconds = totalSeconds.toInt() % 60
+        lateinit var formattedTime: String
+
+        formattedTime = if (hours < 10) {
+            if (hours == 0) {
+                ""
+            } else {
+                "0$hours:"
+            }
+        }else {
+            "$hours:"
+        }
+
+        formattedTime += if (minutes < 10) {
+            "0$minutes:"
+        }else {
+            "$minutes:"
+        }
+
+        formattedTime += if (seconds < 10) {
+            "0$seconds"
+        }else {
+            "$seconds"
+        }
+
+        return formattedTime
     }
 
     override fun getItemCount(): Int {
@@ -45,22 +74,11 @@ class CustomAdapter internal constructor(
 
     inner class MyViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
-        var tour_id_txt: TextView
-        var tour_start_txt: TextView
-        var tour_destination_txt: TextView
-        var tour_duration_txt: TextView
-        var tour_date_txt: TextView
-        var mainLayout: LinearLayout
-
-        init {
-            tour_id_txt = itemView.findViewById(R.id.tourIDText)
-            tour_start_txt = itemView.findViewById(R.id.tourStartText)
-            tour_destination_txt = itemView.findViewById(R.id.tourDestinationText)
-            tour_duration_txt = itemView.findViewById(R.id.tourDurationText)
-            tour_date_txt = itemView.findViewById(R.id.tourDateText)
-
-            mainLayout = itemView.findViewById(R.id.mainLayout)
-        }
+        var tourIDTxt: TextView = itemView.findViewById(R.id.tourIDText)
+        var tourStartTxt: TextView = itemView.findViewById(R.id.tourStartText)
+        var tourDestinationTxt: TextView = itemView.findViewById(R.id.tourDestinationText)
+        var tourDurationTxt: TextView = itemView.findViewById(R.id.tourDurationText)
+        var tourDateTxt: TextView = itemView.findViewById(R.id.tourDateText)
     }
 
 }

@@ -10,15 +10,14 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.tabs
 import kotlinx.android.synthetic.main.activity_tours.*
 
-
 class TourActivity: AppCompatActivity() {
 
-    val dbHelper = SQLiteDBHelper(this@TourActivity)
-    private var tour_id =  arrayListOf<String>()
-    private var tour_start = arrayListOf<String>()
-    private var tour_destination = arrayListOf<String>()
-    private var tour_date = arrayListOf<String>()
-    private var tour_duration = arrayListOf<String>()
+    private val dbHelper = SQLiteDBHelper(this@TourActivity)
+    private var tourID =  arrayListOf<String>()
+    private var tourStart = arrayListOf<String>()
+    private var tourDestination = arrayListOf<String>()
+    private var tourDate = arrayListOf<String>()
+    private var tourDuration = arrayListOf<String>()
     private lateinit var customAdapter: CustomAdapter
 
     @SuppressLint("SetTextI18n")
@@ -47,7 +46,7 @@ class TourActivity: AppCompatActivity() {
 
         saveDataInArray()
 
-        customAdapter = CustomAdapter(this@TourActivity, tour_id, tour_start, tour_destination, tour_duration, tour_date)
+        customAdapter = CustomAdapter(this@TourActivity, tourID, tourStart, tourDestination, tourDuration, tourDate)
         recyclerView.adapter = customAdapter
         recyclerView.layoutManager = LinearLayoutManager(this@TourActivity)
     }
@@ -57,14 +56,14 @@ class TourActivity: AppCompatActivity() {
         val cursor: Cursor? = dbHelper.readAllData()
         if (cursor != null) {
             if (cursor.count == 0) {
-                Toast.makeText(this@TourActivity, "No Data in DB", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@TourActivity, "No Tours saved", Toast.LENGTH_SHORT).show()
             } else {
                 while (cursor.moveToNext()) {
-                    tour_id.add(cursor.getString(0))
-                    tour_start.add(cursor.getString(1))
-                    tour_destination.add(cursor.getString(2))
-                    tour_date.add(cursor.getString(3))
-                    tour_duration.add(cursor.getString(4))
+                    tourID.add(cursor.getString(0))
+                    tourStart.add(cursor.getString(1))
+                    tourDestination.add(cursor.getString(2))
+                    tourDate.add(cursor.getString(3))
+                    tourDuration.add(cursor.getString(4))
                 }
             }
         }

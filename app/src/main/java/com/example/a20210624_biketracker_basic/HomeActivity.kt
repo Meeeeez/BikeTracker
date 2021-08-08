@@ -18,7 +18,6 @@ import java.util.*
 /*
     TODO: - implement notification logic
           - create app icon
-          - drittes video recycler view custom adapter
  */
 
 class HomeActivity : AppCompatActivity() {
