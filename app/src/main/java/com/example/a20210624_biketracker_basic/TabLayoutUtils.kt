@@ -9,7 +9,7 @@ object TabLayoutUtils {
         val viewGroup = getTabViewGroup(tabLayout)
         if (viewGroup != null) for (childIndex in 0 until viewGroup.childCount) {
             if (enable != null) {
-                viewGroup.getChildAt(childIndex)?.setEnabled(enable)
+                viewGroup.getChildAt(childIndex)?.isEnabled = enable
             }
         }
     }

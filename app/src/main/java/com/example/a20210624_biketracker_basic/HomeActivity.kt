@@ -1,36 +1,29 @@
 package com.example.a20210624_biketracker_basic
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.os.SystemClock
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 /*
-    TODO: - create new small icon fro notification
-          - save tour
-          - fix bug when starting timer (system.elapsedTime)
+    TODO: - implement notification logic
+          - create app icon
+          - drittes video recycler view custom adapter
  */
 
-const val CHANNEL_ID = "channel_id_01"
-
 class HomeActivity : AppCompatActivity() {
-    private var originButton = IntArray(2)
-    private var originChronometer = IntArray(2)
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,64 +31,53 @@ class HomeActivity : AppCompatActivity() {
         val selectedTab: Int = intent.getIntExtra("tab", 0)
         tabs.getTabAt(selectedTab)?.select()
 
-        button.setOnClickListener {
-
+        startTimerButton.setOnClickListener {
             showInputsFields()
 
-            if (button.text != "stop") {
-                chronometer2.start()
-                sendNotification()
+            if (startTimerButton.text != "stop") {
+                newTourChronometer.base = SystemClock.elapsedRealtime()
+                newTourChronometer.start()
                 TabLayoutUtils.enableTabs(tabs, false)
-                button.text = "stop"
+                startTimerButton.text = "stop"
                 inputStart.text.clear()
                 inputDestination.text.clear()
-            } else if (button.text == "stop" && inputStart.text.isNotBlank() && inputDestination.text.isNotBlank()) {
-                chronometer2.stop()
-                deleteNotification()
+            } else if (startTimerButton.text == "stop" && inputStart.text.isNotBlank() && inputDestination.text.isNotBlank()) {
+                newTourChronometer.stop()
                 TabLayoutUtils.enableTabs(tabs, true)
 
                 hideInputFields()
 
-                button.text = "start"
+                startTimerButton.text = "restart"
 
                 //save tour
                 val dbHelper = SQLiteDBHelper(this@HomeActivity)
-                val duration = dbHelper.formatTime(chronometer2.text.toString())
-                dbHelper.addTour(duration, inputStart.text.toString(), inputDestination.text.toString())
+                val duration = dbHelper.timeToSeconds(newTourChronometer.text.toString())
+                val sdf = SimpleDateFormat("dd.M.yyyy")
+                val currentDate = sdf.format(Date())
+                dbHelper.addTour(duration, inputStart.text.toString(), inputDestination.text.toString(), currentDate)
 
                 if (dbHelper.result == -1L) {
                     Toast.makeText(this@HomeActivity, "Failed to save Tour", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this@HomeActivity, "Saved Tour!", Toast.LENGTH_SHORT).show()
                 }
-
-                chronometer2.base = SystemClock.elapsedRealtime()
             } else {
-                Toast.makeText(
-                    this@HomeActivity,
-                    "Enter Start and Destination",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@HomeActivity, "Enter Start and Destination", Toast.LENGTH_SHORT).show()
             }
         }
 
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
+            @SuppressLint("ShowToast")
             override fun onTabSelected(tab: TabLayout.Tab) {
-                if (button.text != "stop") {
+                if(startTimerButton.text != "stop"){
                     when (tab) {
                         tabs.getTabAt(0) -> switchToTab(0)
                         tabs.getTabAt(1) -> switchToTab(1)
                         tabs.getTabAt(2) -> switchToTab(2)
                         else -> {
-                            print("error")
+                            Toast.makeText(this@HomeActivity, "Error", Toast.LENGTH_SHORT).show()
                         }
                     }
-                } else {
-                    Toast.makeText(
-                        this@HomeActivity,
-                        "Can't switch tab while timer is running",
-                        Toast.LENGTH_LONG
-                    ).show()
                 }
             }
 
@@ -103,10 +85,10 @@ class HomeActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        chronometer2.addTextChangedListener(
+        newTourChronometer.addTextChangedListener(
             object : TextWatcher {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    sendNotification()
+                    //update notification here
                 }
 
                 override fun beforeTextChanged(
@@ -122,47 +104,8 @@ class HomeActivity : AppCompatActivity() {
         )
     }
 
-    private fun sendNotification() {
-        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle("Active Tour")
-            .setContentText(chronometer2.text)
-            .setStyle(
-                NotificationCompat.BigTextStyle()
-                    .bigText(chronometer2.text)
-            )
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setOngoing(true)
-            .setShowWhen(false)
-            .setOnlyAlertOnce(true)
-            .setSound(null)
-
-        with(NotificationManagerCompat.from(this)) {
-            notify(0, builder.build())
-        }
-    }
-
-    private fun deleteNotification() {
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(0)
-    }
-
-    fun switchToTab(index: Int) {
-        if (button.text == "stop") {
-
-            val tabStrip = tabs.getChildAt(0) as LinearLayout
-            tabStrip.isEnabled = false
-            for (i in 0 until tabStrip.childCount) {
-                tabStrip.getChildAt(i).isClickable = false
-            }
-
-            Toast.makeText(
-                this@HomeActivity,
-                "can't switch while timer is running ",
-                Toast.LENGTH_SHORT
-            ).show()
-        } else if (index == 1) {
+    private fun switchToTab(index: Int) {
+        if (index == 1) {
             val intent = Intent(this@HomeActivity, TourActivity::class.java)
             intent.putExtra("tab", 1)
             startActivity(intent)
@@ -174,27 +117,27 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showInputsFields() {
-        chronometer2.animate()
+        newTourChronometer.animate()
             .y(1500f)
         inputDestination.isVisible = true
         inputStart.isVisible = true
-        button.animate()
+        startTimerButton.animate()
             .y(2150f)
             .scaleXBy(0.03f)
             .scaleYBy(0.03f)
             .withEndAction {
-                button.animate()
+                startTimerButton.animate()
                     .scaleXBy(-0.03f)
                     .scaleYBy(-0.03f)
             }
     }
 
     private fun hideInputFields() {
-        chronometer2.animate()
+        newTourChronometer.animate()
             .y(1580f)
         inputDestination.isVisible = false
         inputStart.isVisible = false
-        button.animate()
+        startTimerButton.animate()
             .y(2015f)
     }
 }
