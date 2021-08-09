@@ -19,18 +19,18 @@
 
             <TextView
                 android:id="@+id/tourDurationText"
-                android:layout_width="130sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:text="00:00:00"
-                android:textSize="30sp"
+                android:textSize="36sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tourIDText"
-                android:layout_width="50sp"
+                android:layout_width="55sp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:fontFamily="sans-serif"
@@ -45,10 +45,10 @@
                 android:id="@+id/linearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="16dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="@+id/tourIDText"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tourIDText"
                 app:layout_constraintTop_toTopOf="@+id/tourIDText">
 
                 <LinearLayout
@@ -63,7 +63,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="loc1"
-                        android:textSize="16sp" />
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tourLine"
@@ -71,7 +72,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="-"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tourDestinationText"
@@ -79,7 +81,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="loc2"
-                        android:textSize="16sp" />
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
