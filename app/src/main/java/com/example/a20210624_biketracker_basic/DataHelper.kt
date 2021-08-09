@@ -8,7 +8,7 @@ import android.widget.Toast
 class DataHelper(private val context: Context?) {
 
     private val dbHelper = SQLiteDBHelper(context)
-    private var tourID =  arrayListOf<String>()
+    private var tourID = arrayListOf<String>()
     private var tourStart = arrayListOf<String>()
     private var tourDestination = arrayListOf<String>()
     private var tourDate = arrayListOf<String>()
@@ -44,19 +44,19 @@ class DataHelper(private val context: Context?) {
             } else {
                 "0$hours:"
             }
-        }else {
+        } else {
             "$hours:"
         }
 
         formattedTime += if (minutes < 10) {
             "0$minutes:"
-        }else {
+        } else {
             "$minutes:"
         }
 
         formattedTime += if (seconds < 10) {
             "0$seconds"
-        }else {
+        } else {
             "$seconds"
         }
 

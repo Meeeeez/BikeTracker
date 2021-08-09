@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
 class CustomAdapter internal constructor(
@@ -30,7 +29,9 @@ class CustomAdapter internal constructor(
         holder.tourStartTxt.text = dataMap?.get("start")?.get(position).toString()
         holder.tourDestinationTxt.text = dataMap?.get("destination")?.get(position).toString()
         holder.tourDateTxt.text = dataMap?.get("date")?.get(position).toString()
-        holder.tourDurationTxt.text = holder.dataHelper.secondsToFormattedTime(dataMap?.get("duration")?.get(position).toString())
+        holder.tourDurationTxt.text = holder.dataHelper.secondsToFormattedTime(
+            dataMap?.get("duration")?.get(position).toString()
+        )
     }
 
     override fun getItemCount(): Int {
@@ -50,7 +51,6 @@ class CustomAdapter internal constructor(
         var tourDestinationTxt: TextView = itemView.findViewById(R.id.tourDestinationText)
         var tourDurationTxt: TextView = itemView.findViewById(R.id.tourDurationText)
         var tourDateTxt: TextView = itemView.findViewById(R.id.tourDateText)
-
         val dataHelper = DataHelper(context)
     }
 }

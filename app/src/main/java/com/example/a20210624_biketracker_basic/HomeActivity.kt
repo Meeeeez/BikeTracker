@@ -56,22 +56,29 @@ class HomeActivity : AppCompatActivity() {
                 val duration = dbHelper.timeToSeconds(newTourChronometer.text.toString())
                 val sdf = SimpleDateFormat("dd.M.yyyy")
                 val currentDate = sdf.format(Date())
-                dbHelper.addTour(duration, inputStart.text.toString(), inputDestination.text.toString(), currentDate)
+                dbHelper.addTour(
+                    duration,
+                    inputStart.text.toString(),
+                    inputDestination.text.toString(),
+                    currentDate
+                )
 
                 if (dbHelper.result == -1L) {
-                    Toast.makeText(this@HomeActivity, "Failed to save Tour", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@HomeActivity, "Failed to save Tour", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     Toast.makeText(this@HomeActivity, "Saved Tour!", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this@HomeActivity, "Enter Start and Destination", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@HomeActivity, "Enter Start and Destination", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
 
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             @SuppressLint("ShowToast")
             override fun onTabSelected(tab: TabLayout.Tab) {
-                if(startTimerButton.text != "stop"){
+                if (startTimerButton.text != "stop") {
                     when (tab) {
                         tabs.getTabAt(0) -> switchToTab(0)
                         tabs.getTabAt(1) -> switchToTab(1)
@@ -101,6 +108,7 @@ class HomeActivity : AppCompatActivity() {
                 ) {
 
                 }
+
                 override fun afterTextChanged(s: Editable) {}
             }
         )
@@ -121,9 +129,11 @@ class HomeActivity : AppCompatActivity() {
             formattedTime = dataHelper.secondsToFormattedTime(sumSeconds.toString())
             val time = formattedTime.split(":").toTypedArray()
             if (time.size == 2) {
-                totalTimeChronometer.base = (SystemClock.elapsedRealtime() - (time[0].toInt() * 60000 + time[1].toInt() * 1000))
-            }else {
-                totalTimeChronometer.base = (SystemClock.elapsedRealtime() - (time[0].toInt() * 3600000 + time[1].toInt() * 60000 + time[2].toInt() * 1000))
+                totalTimeChronometer.base =
+                    (SystemClock.elapsedRealtime() - (time[0].toInt() * 60000 + time[1].toInt() * 1000))
+            } else {
+                totalTimeChronometer.base =
+                    (SystemClock.elapsedRealtime() - (time[0].toInt() * 3600000 + time[1].toInt() * 60000 + time[2].toInt() * 1000))
             }
         }
     }
