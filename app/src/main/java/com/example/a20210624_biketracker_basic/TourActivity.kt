@@ -12,12 +12,6 @@ import kotlinx.android.synthetic.main.activity_tours.*
 
 class TourActivity: AppCompatActivity() {
 
-    private val dbHelper = SQLiteDBHelper(this@TourActivity)
-    private var tourID =  arrayListOf<String>()
-    private var tourStart = arrayListOf<String>()
-    private var tourDestination = arrayListOf<String>()
-    private var tourDate = arrayListOf<String>()
-    private var tourDuration = arrayListOf<String>()
     private lateinit var customAdapter: CustomAdapter
 
     @SuppressLint("SetTextI18n")
@@ -44,29 +38,12 @@ class TourActivity: AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        saveDataInArray()
+        val dataHelper = DataHelper(this@TourActivity)
+        val dataMap: MutableMap<String, ArrayList<String>>? = dataHelper.saveDataInArray()
 
-        customAdapter = CustomAdapter(this@TourActivity, tourID, tourStart, tourDestination, tourDuration, tourDate)
+        customAdapter = CustomAdapter(this@TourActivity, dataMap)
         recyclerView.adapter = customAdapter
         recyclerView.layoutManager = LinearLayoutManager(this@TourActivity)
-    }
-
-    @SuppressLint("ShowToast")
-    private fun saveDataInArray() {
-        val cursor: Cursor? = dbHelper.readAllData()
-        if (cursor != null) {
-            if (cursor.count == 0) {
-                Toast.makeText(this@TourActivity, "No Tours saved", Toast.LENGTH_SHORT).show()
-            } else {
-                while (cursor.moveToNext()) {
-                    tourID.add(cursor.getString(0))
-                    tourStart.add(cursor.getString(1))
-                    tourDestination.add(cursor.getString(2))
-                    tourDate.add(cursor.getString(3))
-                    tourDuration.add(cursor.getString(4))
-                }
-            }
-        }
     }
 
     fun switchToTab(index: Int) {

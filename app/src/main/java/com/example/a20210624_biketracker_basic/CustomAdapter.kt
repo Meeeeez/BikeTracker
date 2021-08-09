@@ -6,15 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.collections.ArrayList
 
 class CustomAdapter internal constructor(
     private val context: Context,
-    private val tour_id: ArrayList<*>,
-    private val tour_start: ArrayList<*>,
-    private val tour_destination: ArrayList<*>,
-    private val tour_duration: ArrayList<*>,
-    private val tour_date: ArrayList<*>
+    private val dataMap: MutableMap<String, ArrayList<String>>?
 
 ) : RecyclerView.Adapter<CustomAdapter.MyViewHolder>() {
     override fun onCreateViewHolder(
@@ -30,14 +25,15 @@ class CustomAdapter internal constructor(
         holder: MyViewHolder,
         position: Int
     ) {
-        holder.tourIDTxt.text = tour_id[position].toString()
-        holder.tourStartTxt.text = tour_start[position].toString()
-        holder.tourDestinationTxt.text = tour_destination[position].toString()
-        holder.tourDateTxt.text = tour_date[position].toString()
-        holder.tourDurationTxt.text = secondsToTime(tour_duration[position].toString())
+        holder.tourIDTxt.text = dataMap?.get("id")?.get(position).toString()
+        holder.tourStartTxt.text = dataMap?.get("start")?.get(position).toString()
+        holder.tourDestinationTxt.text = dataMap?.get("destination")?.get(position).toString()
+        holder.tourDateTxt.text = dataMap?.get("date")?.get(position).toString()
+
+        holder.tourDurationTxt.text = secondsToFormattedTime(dataMap?.get("duration")?.get(position).toString())
     }
 
-    private fun secondsToTime(totalSeconds: String): String {
+    private fun secondsToFormattedTime(totalSeconds: String): String {
         val hours = totalSeconds.toInt() / 3600
         val minutes = ((totalSeconds.toInt()) / 60) % 60
         val seconds = totalSeconds.toInt() % 60
@@ -69,7 +65,13 @@ class CustomAdapter internal constructor(
     }
 
     override fun getItemCount(): Int {
-        return tour_id.size
+        val data: ArrayList<String>? = dataMap?.get("id")
+
+        if (data != null) {
+            return data.size
+        }
+
+        return -1
     }
 
     inner class MyViewHolder(itemView: View) :
@@ -80,5 +82,4 @@ class CustomAdapter internal constructor(
         var tourDurationTxt: TextView = itemView.findViewById(R.id.tourDurationText)
         var tourDateTxt: TextView = itemView.findViewById(R.id.tourDateText)
     }
-
 }
