@@ -30,38 +30,7 @@ class CustomAdapter internal constructor(
         holder.tourStartTxt.text = dataMap?.get("start")?.get(position).toString()
         holder.tourDestinationTxt.text = dataMap?.get("destination")?.get(position).toString()
         holder.tourDateTxt.text = dataMap?.get("date")?.get(position).toString()
-        holder.tourDurationTxt.text = secondsToFormattedTime(dataMap?.get("duration")?.get(position).toString())
-    }
-
-    private fun secondsToFormattedTime(totalSeconds: String): String {
-        val hours = totalSeconds.toInt() / 3600
-        val minutes = ((totalSeconds.toInt()) / 60) % 60
-        val seconds = totalSeconds.toInt() % 60
-        lateinit var formattedTime: String
-
-        formattedTime = if (hours < 10) {
-            if (hours == 0) {
-                ""
-            } else {
-                "0$hours:"
-            }
-        }else {
-            "$hours:"
-        }
-
-        formattedTime += if (minutes < 10) {
-            "0$minutes:"
-        }else {
-            "$minutes:"
-        }
-
-        formattedTime += if (seconds < 10) {
-            "0$seconds"
-        }else {
-            "$seconds"
-        }
-
-        return formattedTime
+        holder.tourDurationTxt.text = holder.dataHelper.secondsToFormattedTime(dataMap?.get("duration")?.get(position).toString())
     }
 
     override fun getItemCount(): Int {
@@ -81,5 +50,7 @@ class CustomAdapter internal constructor(
         var tourDestinationTxt: TextView = itemView.findViewById(R.id.tourDestinationText)
         var tourDurationTxt: TextView = itemView.findViewById(R.id.tourDurationText)
         var tourDateTxt: TextView = itemView.findViewById(R.id.tourDateText)
+
+        val dataHelper = DataHelper(context)
     }
 }

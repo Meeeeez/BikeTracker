@@ -39,7 +39,7 @@ class TourActivity: AppCompatActivity() {
         })
 
         val dataHelper = DataHelper(this@TourActivity)
-        dataHelper.saveDataInArray()
+        dataHelper.saveDataInArray(true)
         val dataMap: MutableMap<String, ArrayList<String>>? = dataHelper.getAllData()
 
         customAdapter = CustomAdapter(this@TourActivity, dataMap)

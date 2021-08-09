@@ -108,15 +108,23 @@ class HomeActivity : AppCompatActivity() {
 
     private fun initTTChronometer() {
         val dataHelper = DataHelper(this@HomeActivity)
-        dataHelper.saveDataInArray()
+        dataHelper.saveDataInArray(false)
         val duration: ArrayList<String>? = dataHelper.getDataByIndex(4)
-        var sum = 0
+        var sumSeconds = 0
+        lateinit var formattedTime: String
 
         if (duration != null) {
             for (number in duration) {
-                sum += number.toInt()
+                sumSeconds += number.toInt()
             }
-            println("Total seconds: $sum")
+
+            formattedTime = dataHelper.secondsToFormattedTime(sumSeconds.toString())
+            val time = formattedTime.split(":").toTypedArray()
+            if (time.size == 2) {
+                totalTimeChronometer.base = (SystemClock.elapsedRealtime() - (time[0].toInt() * 60000 + time[1].toInt() * 1000))
+            }else {
+                totalTimeChronometer.base = (SystemClock.elapsedRealtime() - (time[0].toInt() * 3600000 + time[1].toInt() * 60000 + time[2].toInt() * 1000))
+            }
         }
     }
 

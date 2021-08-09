@@ -3,8 +3,9 @@ package com.example.a20210624_biketracker_basic
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
+import android.widget.Toast
 
-class DataHelper(context: Context?) {
+class DataHelper(private val context: Context?) {
 
     private val dbHelper = SQLiteDBHelper(context)
     private var tourID =  arrayListOf<String>()
@@ -14,11 +15,11 @@ class DataHelper(context: Context?) {
     private var tourDuration = arrayListOf<String>()
 
     @SuppressLint("ShowToast")
-    fun saveDataInArray() {
+    fun saveDataInArray(showToast: Boolean) {
         val cursor: Cursor? = dbHelper.readAllData()
         if (cursor != null) {
-            if (cursor.count == 0) {
-                println("no data in db")
+            if (cursor.count == 0 && showToast) {
+                Toast.makeText(context, "No data in DB", Toast.LENGTH_SHORT).show()
             } else {
                 while (cursor.moveToNext()) {
                     tourID.add(cursor.getString(0))
@@ -29,6 +30,37 @@ class DataHelper(context: Context?) {
                 }
             }
         }
+    }
+
+    fun secondsToFormattedTime(totalSeconds: String): String {
+        val hours = totalSeconds.toInt() / 3600
+        val minutes = ((totalSeconds.toInt()) / 60) % 60
+        val seconds = totalSeconds.toInt() % 60
+        lateinit var formattedTime: String
+
+        formattedTime = if (hours < 10) {
+            if (hours == 0) {
+                ""
+            } else {
+                "0$hours:"
+            }
+        }else {
+            "$hours:"
+        }
+
+        formattedTime += if (minutes < 10) {
+            "0$minutes:"
+        }else {
+            "$minutes:"
+        }
+
+        formattedTime += if (seconds < 10) {
+            "0$seconds"
+        }else {
+            "$seconds"
+        }
+
+        return formattedTime
     }
 
     fun getAllData(): MutableMap<String, ArrayList<String>> {
