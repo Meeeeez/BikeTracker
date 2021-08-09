@@ -39,7 +39,8 @@ class TourActivity: AppCompatActivity() {
         })
 
         val dataHelper = DataHelper(this@TourActivity)
-        val dataMap: MutableMap<String, ArrayList<String>>? = dataHelper.saveDataInArray()
+        dataHelper.saveDataInArray()
+        val dataMap: MutableMap<String, ArrayList<String>>? = dataHelper.getAllData()
 
         customAdapter = CustomAdapter(this@TourActivity, dataMap)
         recyclerView.adapter = customAdapter

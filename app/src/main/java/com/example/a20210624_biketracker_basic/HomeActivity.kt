@@ -14,6 +14,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 /*
     TODO: - implement notification logic
@@ -29,6 +30,8 @@ class HomeActivity : AppCompatActivity() {
 
         val selectedTab: Int = intent.getIntExtra("tab", 0)
         tabs.getTabAt(selectedTab)?.select()
+
+        initTTChronometer()
 
         startTimerButton.setOnClickListener {
             showInputsFields()
@@ -101,6 +104,20 @@ class HomeActivity : AppCompatActivity() {
                 override fun afterTextChanged(s: Editable) {}
             }
         )
+    }
+
+    private fun initTTChronometer() {
+        val dataHelper = DataHelper(this@HomeActivity)
+        dataHelper.saveDataInArray()
+        val duration: ArrayList<String>? = dataHelper.getDataByIndex(4)
+        var sum = 0
+
+        if (duration != null) {
+            for (number in duration) {
+                sum += number.toInt()
+            }
+            println("Total seconds: $sum")
+        }
     }
 
     private fun switchToTab(index: Int) {
